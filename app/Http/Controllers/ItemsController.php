@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\DefaultExtras;
 use App\Description;
 use App\Extra;
 use App\Item_desc;
@@ -34,8 +35,9 @@ class ItemsController extends Controller
     {
         $categories = Category::all();
         $extras = Extra::all();
+        $defaults = Extra::all();
         $descriptions = Description::all();
-        return view('items.create', compact('categories', 'descriptions', 'extras'));
+        return view('items.create', compact('descriptions','defaults','categories', 'defaultExtra', 'extras'));
     }
 
     /**
@@ -51,9 +53,9 @@ class ItemsController extends Controller
             'nameAR' => 'required|min:5',
             'nameEN' => 'required|min:5',
             'price' => 'required|min:1|numeric',
-            'about' => 'required|min:5',
             'img' => 'required|mimes:jpeg,bmp,png',
             'cate_id' => 'required',
+            'desc_id' => 'required',
         ]);
 
         if ($request->hasFile('img')) {
@@ -65,20 +67,31 @@ class ItemsController extends Controller
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
                 'cate_id' => request('cate_id'),
-                'about' => request('about'),
+                'desc_id' => request('desc_id'),
                 'img' => $fileName,
                 'active' => 0,
             ]);
         }
 
         $item_id = DB::table('items')->max('id');
-        $descriptions = $request->get('desc_id');
+        $descriptions = $request->get('default_id');
         if (count($descriptions) > 0) {
             foreach ($descriptions as $desc) {
-                $itemDesc = new Item_desc();
-                $itemDesc->item_id = $item_id;
-                $itemDesc->desc_id = $desc;
-                $itemDesc->save();
+                $default = new DefaultExtras();
+                $default->item_id = $item_id;
+                $default->default_id = $desc;
+                $default->save();
+            }
+        }
+
+        $item_id = DB::table('items')->max('id');
+        $descriptions = $request->get('extra_id');
+        if (count($descriptions) > 0) {
+            foreach ($descriptions as $desc) {
+                $sub_item = new SubItems();
+                $sub_item->item_id = $item_id;
+                $sub_item->extra_id = $desc;
+                $sub_item->save();
             }
         }
         flash('item created .')->success();
@@ -102,15 +115,17 @@ class ItemsController extends Controller
             ->where('item_id', '=', $id)
             ->get();
 
-        $descriptions = DB::table('descriptions')
-            ->select('descriptions.id', 'descriptions.name')
-            ->join('item_descs', 'desc_id', '=', 'descriptions.id')
+
+        $defaults = DB::table('extras')
+            ->select('extras.id', 'extras.name')
+            ->join('default_extras', 'default_id', '=', 'extras.id')
             ->where('item_id', '=', $id)
             ->get();
 
         $category = Category::where('id', $item->cate_id)->pluck('name')->first();
+        $description = Description::where('id', $item->desc_id)->pluck('name')->first();
 
-        return view('items.show', compact('category', 'item', 'extras', 'descriptions'));
+        return view('items.show', compact('category', 'item', 'extras', 'defaults','description'));
     }
 
     /**
@@ -123,7 +138,12 @@ class ItemsController extends Controller
     {
         $items = Items::find($id);
         $categories = Category::all();
-        return view('items.edit', compact('items', 'categories'));
+        $descriptions = Description::all();
+        $cate_id = Category::where('id', $items->cate_id)->pluck('id')->first();
+        $desc_id = Description::where('id', $items->desc_id)->pluck('id')->first();
+        $cate_name = Category::where('id',$cate_id)->pluck('name')->first();
+        $desc_name = Description::where('id',$desc_id)->pluck('name')->first();
+        return view('items.edit', compact('items', 'categories','descriptions','cate_name','desc_name'));
     }
 
     /**
@@ -138,39 +158,36 @@ class ItemsController extends Controller
         $this->validate(request(), [
             'nameAR' => 'required|min:5',
             'nameEN' => 'required|min:5',
-            'about' => 'required|min:5',
+            'desc_id' => 'required',
             'price' => 'required|min:1|numeric',
             'cate_id' => 'required',
         ]);
 
         if ($request->hasFile('img')) {
             $image = DB::table('items')->where('id', $id)->pluck('img')->first();
-            $filename = 'images/items/' . $image;
-            File::delete($filename);
+            File::delete($image);
             $file = $request->file('img');
-
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-
             $file->move(public_path('images/items'), $fileName);
             $fileName = 'images/items/' . $fileName;
             Items::whereId($id)->update([
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
-                'about' => $request['about'],
                 'img' => $fileName,
                 'cate_id' => $request['cate_id'],
+                'desc_id' => request('desc_id'),
             ]);
         } else {
             $image = DB::table('items')->where('id', $id)->pluck('img')->first();
             Items::whereId($id)->update([
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
-                'about' => $request['about'],
                 'price' => $request['price'],
                 'img' => $image,
                 'cate_id' => $request['cate_id'],
+                'desc_id' => request('desc_id'),
             ]);
         }
-        return redirect('/items/admin');
+        return redirect('/items/show/'.$id);
     }
 
 
@@ -183,7 +200,6 @@ class ItemsController extends Controller
     public function destroy(Request $request, $id, $active)
     {
         $cate_id = DB::table('items')->where('id', $id)->pluck('cate_id')->first();
-        $about = DB::table('items')->where('id', $id)->pluck('about')->first();
         $price = DB::table('items')->where('id', $id)->pluck('price')->first();
         $image = DB::table('items')->where('id', $id)->pluck('img')->first();
         $name = DB::table('items')->where('id', $id)->pluck('name')->first();
@@ -193,7 +209,6 @@ class ItemsController extends Controller
             'img' => $image,
             'cate_id' => $cate_id,
             'active' => $active,
-            'about' => $about,
         ]);
         return redirect('/items/admin');
     }

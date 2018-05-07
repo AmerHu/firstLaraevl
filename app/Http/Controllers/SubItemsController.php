@@ -49,8 +49,8 @@ class SubItemController extends Controller
         }
         $count =count($extras);
         if ($count == 0) {
-            flash('Sorry! This no more Extra Items.')->error();
-            return view('desc_item.create', compact('extras','count'));
+            flash('Sorry! This no Extra to add.')->error();
+            return redirect('/items/show/'.$id);
         } else {
             return view('subitem.create', compact('extras', 'item','count'));
         }

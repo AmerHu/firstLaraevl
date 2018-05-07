@@ -23,7 +23,7 @@ class Items extends Model
         'description',
         'img',
         'cate_id',
-        'about',
+        'desc_id',
     ];
 
 }

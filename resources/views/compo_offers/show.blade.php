@@ -9,7 +9,8 @@
         <div class="col-md-6">
             <h3>English Name : {{ json_decode($compo->name, true)['EN'] }}</h3><br/>
             <h3>Arabic Name : {{ json_decode($compo->name, true)['AR'] }}</h3><br/>
-            <h3>Price : {{ $compo->price}}</h3>
+            <h3>Price : {{ $compo->price}}</h3><br/>
+            <h3>Description :{{ json_decode($description, true)['EN'] }}</h3>
             <hr/>
             @if(count($items)>0)
                 <h2> Compos Items</h2>

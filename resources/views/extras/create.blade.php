@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    @if(count($categories)>0)
+
         {{ Form::open(array('url' => '/extra/create', 'files' => true )) }}
     <div class="row">
         <div class="col-md-6">  {{ csrf_field() }}
@@ -52,26 +52,9 @@
                 @endif
             </div>
         </div>
-        <div class="col-md-6">
-            <h2> Add this Extra to Category</h2>
-            <br>
-            @foreach($categories as $category)
-                {{ Form::checkbox('category_id[]', $category->id) }}
-                {{ Form::label('category_id[]', json_decode($category->name, true)['EN']) }}
-                <br/>
-            @endforeach
-        </div>
+
     </div>
     {{ Form::submit('Publish',['class'=> 'btn btn-default']) }}
     {{ Form::close() }}
-    @else
-        <div class="row">
-            <div class="col-md-8">
-                <h2> Please Create Category </h2>
-            </div>
-            <div class="col-md-4">
-                <a class="btn btn-primary btn-block" type="button" href="/category/create"> New Categories</a>
-            </div>
-        </div>
-    @endif
+
 @endsection

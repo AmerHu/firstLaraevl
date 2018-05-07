@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class CompoOffers extends Model
 {
     protected $fillable = [
-        'name', 'price','img',
+        'name', 'price','img','desc_id',
     ];
 }

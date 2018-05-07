@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Description;
 use App\Offers;
 use DB;
 use File;
@@ -27,7 +28,8 @@ class OffersController extends Controller
      */
     public function create()
     {
-        return view('offers.create');
+        $descriptions = Description::all();
+        return view('offers.create',compact('descriptions'));
     }
 
     /**
@@ -42,9 +44,10 @@ class OffersController extends Controller
             'nameAR' => 'required|min:5',
             'nameEN' => 'required|min:5',
             'price' => 'required|min:1|numeric',
-            'description' => 'required|min:5',
             'img' => 'required|min:5|mimes:jpeg,bmp,png',
-            'require'=>'required'
+            'require'=>'required',
+            'active'=>'required',
+            'desc_id' =>'required'
         ]);
 
         if ($request->hasFile('img')) {
@@ -55,9 +58,10 @@ class OffersController extends Controller
             Offers::create([
                 'name' => json_encode(['EN'=> request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
-                'description' => $request['description'],
+                'desc_id' => $request['desc_id'],
                 'img' => $fileName,
                 'require' => $request['require'],
+                'active' => $request['active'],
             ]);
         }
 
@@ -81,7 +85,9 @@ class OffersController extends Controller
             ->join('extra_offers','extra_id','=','extras.id')
             ->where('offer_id', '=', $id)
             ->get();
-        return view('offers.show', compact('offer','extras'));
+
+        $description = Description::where('id', $offer->desc_id)->pluck('name')->first();
+        return view('offers.show', compact('offer','extras','description'));
     }
 
     /**
@@ -93,7 +99,10 @@ class OffersController extends Controller
     public function edit(Offers $offers, $id)
     {
         $offer = Offers::find($id);
-        return view('offers.edit', compact('offer'));
+        $descriptions = Description::all();
+        $desc_id = Description::where('id', $offer->desc_id)->pluck('id')->first();
+        $desc_name = Description::where('id',$desc_id)->pluck('name')->first();
+        return view('offers.edit', compact('offer','desc_name','descriptions'));
     }
 
     /**
@@ -108,29 +117,26 @@ class OffersController extends Controller
         if ($request->hasFile('img')) {
             $image = DB::table('offers')->where('id', $id)->pluck('img')->first();
             File::delete($image);
-
-
             $file = $request->file('img');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('images/offers'), $fileName);
-            $fileName = 'images/offers/'. $fileName;
+            $fileName = 'images/offers/'.$fileName;
             Offers::whereId($id)->update([
 
                 'name' => json_encode(['EN'=> request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
-                'description' => $request['description'],
                 'img' => $fileName,
                 'require' => $request['require'],
+                'desc_id' => $request['desc_id'],
             ]);
         } else {
             $image = DB::table('offers')->where('id', $id)->pluck('img')->first();
             Offers::whereId($id)->update([
-
                 'name' => json_encode(['EN'=> request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
-                'description' => $request['description'],
                 'img' => $image,
                 'require' => $request['require'],
+                'desc_id' => $request['desc_id'],
             ]);
     }
         return redirect('/offers/admin');

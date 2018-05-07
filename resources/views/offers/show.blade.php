@@ -12,7 +12,7 @@
             <h3>Name EN : {{ json_decode($offer->name, true)['EN'] }}</h3>
             <h3>Name AR : {{ json_decode($offer->name, true)['AR'] }}</h3>
             <h3>Price : {{ $offer->price}}</h3>
-            <h3>Description : {{ $offer->description }}</h3>
+            <h3>Description :{{ json_decode($description, true)['EN'] }}</h3>
             <br/>
             <div class="row">
                 @if(count($extras)>0)

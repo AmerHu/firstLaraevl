@@ -11,6 +11,8 @@ class Offers extends Model
         'price',
         'description',
         'img',
+        'desc_id',
+        'active',
         'require'
     ];
 }

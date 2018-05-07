@@ -48,15 +48,6 @@ class ExtraController extends Controller
             'price' => $request['price'],
 
         ]);
-        $extra_id = DB::table('extras')->max('id');
-
-        $categories = $request->get('category_id');
-        foreach ($categories as $category) {
-            $categoryExtras = new CategoryExtras();
-            $categoryExtras->extra_id = $extra_id;
-            $categoryExtras->category_id = $category;
-            $categoryExtras->save();
-        }
 
         flash('Extras created .')->success();
         return redirect('/extra/admin');

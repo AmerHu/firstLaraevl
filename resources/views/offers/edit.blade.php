@@ -52,14 +52,20 @@
 
         <div class="form-group">
             <label>Description</label>
-            <input type="text" class="form-control" name="description" id="description" value = {{$offer->description}}>
-            @if ($errors->has('description'))
-                <span class="help-block">
-                    <strong>{{ $errors->first('description') }}</strong>
-                </span>
-            @endif
+            <select name="desc_id" class="form-control" style="height:36px">
+                <option value="{{ $offer->desc_id }}">{{ json_decode( $desc_name, true)['EN'] }}</option>
+                @foreach($descriptions as $description)
+                    <option value="{{ $description->id }}">
+                        {{ json_decode($description->name, true)['EN'] }}
+                    </option>
+                @endforeach
+                @if ($errors->has('cate_id'))
+                    <span class="help-block">
+                                        <strong>{{ $errors->first('cate_id') }}</strong>
+                                    </span>
+                @endif
+            </select>
         </div>
-
         @if($offer->require ===  1)
         <div class="form-group">
             <label>Is Offers</label>
@@ -79,6 +85,30 @@
                 <input checked="checked" name="require" id="require" type="radio" value="1"><br/>
                 <label>Not Required   </label>
                 <input checked="checked" id="require" name="require" type="radio" value="0">
+            </div>
+        @endif
+
+        {{--////////////////--}}
+
+        @if($offer->active ===  1)
+            <div class="form-group">
+                <label>Is Active</label>
+                <br>
+                <label> Active  </label>
+                <input checked="checked" name="active" id="active" type="radio" value="1"><br/>
+                <label>Not Required   </label>
+                <input id="active" name="active" type="radio" value="0">
+            </div>
+        @endif
+
+        @if($offer->active ===  0)
+            <div class="form-group">
+                <label>Is Active</label>
+                <br>
+                <label> Active  </label>
+                <input checked="checked" name="active" id="active" type="radio" value="1"><br/>
+                <label>Not Required   </label>
+                <input checked="checked" id="active" name="active" type="radio" value="0">
             </div>
         @endif
 

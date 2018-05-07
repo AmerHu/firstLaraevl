@@ -64,7 +64,7 @@
                         </div>
                         <br/>
                         <div class="row">
-                            <div class="col-sm-4 col-lg-4">
+                            <div class="col-sm-6 col-lg-6">
                                 <a href="/extra/admin">
                                     <div class="card text-white bg-flat-color-5">
                                         <div class="card-body pb-1">
@@ -76,19 +76,7 @@
                                     </div>
                                 </a>
                             </div>
-                            <div class="col-sm-4 col-lg-4">
-                                <a href="/desc/admin">
-                                    <div class="card text-white bg-flat-color-2">
-                                        <div class="card-body pb-1">
-                                            <h4 class="mb-0">
-                                                <span class="count">{{$desc}}</span>
-                                            </h4>
-                                            <p class="text-light">Description </p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-sm-4 col-lg-4">
+                            <div class="col-sm-6 col-lg-6">
                                 <a href="/compo/admin">
                                     <div class="card text-white bg-flat-color-1">
                                         <div class="card-body pb-1">

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\CompoOffers;
+use App\Description;
+use App\Items;
+use App\ItemsOffer;
 use Illuminate\Http\Request;
 use DB;
 use File;
@@ -27,7 +30,9 @@ class CompoOffersController extends Controller
      */
     public function create()
     {
-        return view("compo_offers.create");
+        $descriptions = Description::all();
+        $items = Items::all();
+        return view("compo_offers.create",compact('descriptions','items'));
     }
 
     /**
@@ -44,6 +49,7 @@ class CompoOffersController extends Controller
             'nameAR' => 'required|min:5',
             'price' => 'required|min:1|numeric',
             'img' => 'required|mimes:jpeg,bmp,png',
+            'desc_id' =>'required',
         ]);
 
         if ($request->hasFile('img')) {
@@ -56,10 +62,22 @@ class CompoOffersController extends Controller
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => request("price"),
                 'img' => $fileName,
+                'require' => $request['require'],
+                'desc_id' => $request['desc_id'],
+                'active' => true,
             ]);
         }
-
         $compo_id = DB::table('compo_offers')->max('id');
+        $compos = $request->get('item_id');
+        if (count($compos)> 0  ) {
+            foreach ($compos as $compo) {
+                $itemOffer = new ItemsOffer();
+                $itemOffer->offer_id = $compo_id;
+                $itemOffer->item_id = $compo;
+                $itemOffer->save();
+            }
+        }
+
          flash('Compo Offer created .')->success();
         return redirect('/compo/show/'.$compo_id);
     }
@@ -79,7 +97,9 @@ class CompoOffersController extends Controller
             ->join('items_offers', 'item_id', '=', 'items.id')
             ->where('offer_id', '=', $id)
             ->get();
-        return view('compo_offers.show', compact('compo', 'items'));
+
+        $description = Description::where('id', $compo->desc_id)->pluck('name')->first();
+        return view('compo_offers.show', compact('compo', 'items','description'));
 
     }
 
@@ -92,7 +112,10 @@ class CompoOffersController extends Controller
     public function edit($id)
     {
         $compo = CompoOffers::find($id);
-        return view('compo_offers.edit', compact("compo"));
+        $descriptions = Description::all();
+        $desc_id = Description::where('id', $compo->desc_id)->pluck('id')->first();
+        $desc_name = Description::where('id',$desc_id)->pluck('name')->first();
+        return view('compo_offers.edit', compact("compo",'descriptions','desc_name'));
     }
 
     /**
@@ -107,7 +130,6 @@ class CompoOffersController extends Controller
         if ($request->hasFile('img')) {
             $image = DB::table('compo_offers')->where('id', $id)->pluck('img')->first();
             File::delete($image);
-
             $file = $request->file('img');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('images/compo'), $fileName);
@@ -116,6 +138,7 @@ class CompoOffersController extends Controller
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
                 'img' => $fileName,
+                'desc_id' => request('desc_id'),
             ]);
         } else {
             $image = DB::table('compo_offers')->where('id', $id)->pluck('img')->first();
@@ -123,6 +146,7 @@ class CompoOffersController extends Controller
                 'name' => json_encode(['EN' => request("nameEN"), 'AR' => request("nameAR")]),
                 'price' => $request['price'],
                 'img' => $image,
+                'desc_id' => request('desc_id'),
             ]);
         }
 
@@ -139,6 +163,7 @@ class CompoOffersController extends Controller
     public function destroy(Request $request, $id, $active)
     {
         $price = DB::table('compo_offers')->where('id', $id)->pluck('price')->first();
+        $desc_id = DB::table('compo_offers')->where('id', $id)->pluck('desc_id')->first();
         $name = DB::table('compo_offers')->where('id', $id)->pluck('name')->first();
         $image = DB::table('compo_offers')->where('id', $id)->pluck('img')->first();
         CompoOffers::whereId($id)->update([
@@ -146,6 +171,7 @@ class CompoOffersController extends Controller
             'img' => $image,
             'price' => $price,
             'active' => $active,
+            'desc_id' =>$desc_id,
         ]);
         return redirect('/compo/admin');
     }

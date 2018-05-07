@@ -30,8 +30,8 @@ class HomeController extends Controller
         $offer = DB::table('offers')->count();
         $extras = DB::table('extras')->count();
         $user = DB::table('users')->count();
-        $desc = DB::table('descriptions')->count();
+        $default = DB::table('defaults')->count();
         $compo = DB::table('compo_offers')->count();
-        return view('home',compact('category','item','offer','user','extras','desc','compo'));
+        return view('home',compact('category','item','offer','user','extras','default','compo'));
     }
 }

@@ -40,15 +40,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-
-
         $this->validate(
             request(), [
             'nameEN' => 'required|min:5',
             'nameAR' => 'required|min:5',
             'img' => 'required|mimes:jpeg,bmp,png',
         ]);
-
         if ($request->hasFile('img')) {
             $file = request()->file('img');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
@@ -59,9 +56,9 @@ class CategoryController extends Controller
                 'img' => $fileName,
             ]);
         }
-        $desc_id = DB::table('categories')->max('id');
+        $cate_id = DB::table('categories')->max('id');
         flash('Category created .')->success();
-        return back()->withInput();
+        return redirect('/category/show/'.$cate_id);
     }
 
     /**

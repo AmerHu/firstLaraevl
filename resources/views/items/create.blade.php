@@ -41,17 +41,9 @@
         </span>
             @endif
         </div>
+
         <div class="form-group">
-            {{ Form::label('about', 'About', ['class' => 'awesome']) }}
-            {!! Form::text('about', null, ['class' => 'form-control','step' => '0.1']) !!}
-            @if ($errors->has('about'))
-                <span class="help-block">
-        <strong>{{ $errors->first('about') }}</strong>
-        </span>
-            @endif
-        </div>
-        <div class="form-group">
-            {{ Form::label('category', 'Category', ['class' => 'awesome']) }}
+            {{ Form::label('cate_id', 'Category', ['class' => 'awesome']) }}
 
             <select name="cate_id" class="form-control" style="height:36px">
                 <option>Select</option>
@@ -70,6 +62,24 @@
         </div>
         <div class="form-group">
 
+            {{ Form::label('desc_id', 'Description', ['class' => 'awesome']) }}
+            <select name="desc_id" class="form-control" style="height:36px">
+                <option>Select</option>
+                @foreach($descriptions as $description)
+                    <option value="{{ $description->id }}">
+                        {{ json_decode($description->name, true)['EN'] }}
+
+                    </option>
+                @endforeach
+                @if ($errors->has('desc_id'))
+                    <span class="help-block">
+                                        <strong>{{ $errors->first('desc_id') }}</strong>
+                                    </span>
+                @endif
+            </select>
+        </div>
+        <div class="form-group">
+
             {{ Form::label('img', 'Image', ['class' => 'awesome']) }}
             {{ Form::file('img', null)  }}
             {{--<input id="file-upload" type="file" name="img" id="img"/>--}}
@@ -82,18 +92,28 @@
 
     </div>
     <div class="col-md-6">
-        <h3>Description</h3>
+        <h3> Extra</h3>
         <div class="form-group">
 
-            @foreach($descriptions as $description)
+            @foreach($extras as $extra)
                 <div class="checkbox checkbox-success">
-                    <input name="desc_id[]" id="desc_id{{ $description->id }}" type="checkbox"
-                           value="{{ $description->id }}">
-                    <label for="desc_id{{ $description->id }}">{{ json_decode($description->name, true)['EN'] }} {{ json_decode($description->name, true)['AR'] }}</label>
+                    <input name="extra_id[]" id="extra_id{{ $extra->id }}" type="checkbox"
+                           value="{{ $extra->id }}">
+                    <label for="extra_id{{ $extra->id }}">{{ json_decode($extra->name, true)['EN'] }} {{ json_decode($extra->name, true)['AR'] }}</label>
                 </div>
             @endforeach
         </div>
+        <h3>Default Extra</h3>
+        <div class="form-group">
 
+            @foreach($defaults as $default)
+                <div class="checkbox checkbox-success">
+                    <input name="default_id[]" id="default_id{{ $default->id }}" type="checkbox"
+                           value="{{ $default->id }}">
+                    <label for="default_id{{ $default->id }}">{{ json_decode($default->name, true)['EN'] }} {{ json_decode($default->name, true)['AR'] }}</label>
+                </div>
+            @endforeach
+        </div>
     </div>
     {{ Form::submit('Publish',['class'=> 'btn btn-default']) }}
     {{ Form::close() }}

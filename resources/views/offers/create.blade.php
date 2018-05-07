@@ -33,13 +33,22 @@
     </div>
 
     <div class="form-group">
-        {{ Form::label('description', 'description', ['class' => 'awesome']) }}
-        {!! Form::text('description', null, ['class'=>'form-control']) !!}
-        @if ($errors->has('description'))
-            <span class="help-block">
-        <strong>{{ $errors->first('description') }}</strong>
-        </span>
-        @endif
+
+        {{ Form::label('desc_id', 'Description', ['class' => 'awesome']) }}
+        <select name="desc_id" class="form-control" style="height:36px">
+            <option>Select</option>
+            @foreach($descriptions as $description)
+                <option value="{{ $description->id }}">
+                    {{ json_decode($description->name, true)['EN'] }}
+
+                </option>
+            @endforeach
+            @if ($errors->has('desc_id'))
+                <span class="help-block">
+                                        <strong>{{ $errors->first('desc_id') }}</strong>
+                                    </span>
+            @endif
+        </select>
     </div>
 
     <div class="form-group">
@@ -59,6 +68,14 @@
         <input name="require" id="require" type="radio" value="1"><br/>
         <label>Not Required </label>
         <input checked="checked" id="require" name="require" type="radio" value="0">
+    </div>
+    <div class="form-group">
+        <label>Is Active</label>
+        <br>
+        <label> Active </label>
+        <input name="active" id="active" type="radio" value="1"><br/>
+        <label>Not Active </label>
+        <input checked="checked" id="active" name="active" type="radio" value="0">
     </div>
     <div class="form-group">
 

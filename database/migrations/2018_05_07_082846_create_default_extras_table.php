@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateItemDescsTable extends Migration
+class CreateDefaultExtrasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateItemDescsTable extends Migration
      */
     public function up()
     {
-        Schema::create('item_descs', function (Blueprint $table) {
+        Schema::create('default_extras', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('default_id')->unsigned();
             $table->integer('item_id')->unsigned();
-            $table->integer('desc_id')->unsigned();
             $table->timestamps();
         });
-        Schema::table('item_descs', function ($table) {
-            $table->foreign('desc_id')->references('id')->on('defaultExtra')->onDelete('cascade');
+        Schema::table('default_extras', function ($table) {
+            $table->foreign('default_id')->references('id')->on('extras')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
@@ -32,6 +32,6 @@ class CreateItemDescsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_descs');
+        Schema::dropIfExists('default_extras');
     }
 }

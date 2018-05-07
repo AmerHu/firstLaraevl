@@ -34,7 +34,7 @@ class ItemDescController extends Controller
         if ($desc_id == null) {
             $descriptions = Description::all();
         } else {
-            $descriptions = DB::table('descriptions')
+            $descriptions = DB::table('defaultExtra')
                 ->whereNotIn('id', function ($query)use ($id) {
                     $query->select('desc_id')
                         ->from('item_descs')

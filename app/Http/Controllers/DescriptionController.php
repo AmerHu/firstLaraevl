@@ -86,7 +86,7 @@ class DescriptionController extends Controller
             'nameEN' => 'required|min:5',
             'nameAR' => 'required|min:5',
         ]);
-        DB::table('descriptions')
+        DB::table('defaultExtra')
             ->where('id',$id)
             ->update([
             'name' => json_encode(['EN'=> request("nameEN"), 'AR' => request("nameAR")]),
@@ -103,7 +103,7 @@ class DescriptionController extends Controller
      */
     public function destroy(Request $request, $id,$active)
     {
-        $name = DB::table('descriptions')->where('id', $id)->pluck('name')->first();
+        $name = DB::table('defaultExtra')->where('id', $id)->pluck('name')->first();
         Description::whereId($id)->update([
             'name' => $name,
             'active' => $active,

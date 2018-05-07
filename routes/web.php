@@ -137,3 +137,13 @@ Route::post('/cateExtra/edit/{id}', 'CategoryExtrasController@update');
 Route::get('/cateExtra/delete/{cate_id}/{extra_id}', 'CategoryExtrasController@destroy');
 Route::get('/cateExtra/create/{id}', 'CategoryExtrasController@create');
 Route::post('/cateExtra/create', 'CategoryExtrasController@store');
+
+
+
+//Default
+
+Route::get('/default/edit/{id}', 'DefaultExtrasController@edit');
+Route::post('/default/edit/{id}', 'DefaultExtrasController@update');
+Route::get('/default/delete/{item_id}/{default_id}', 'DefaultExtrasController@destroy');
+Route::get('/default/create/{id}', 'DefaultExtrasController@create');
+Route::post('/default/create', 'DefaultExtrasController@store');

@@ -53,10 +53,27 @@
         <div class="form-group">
             <label>Category</label>
             <select name="cate_id" class="form-control" style="height:36px">
-                <option value="{{ $items->cate_id }}">NO Change Category</option>
+                <option value="{{ $items->cate_id }}">{{ json_decode($cate_name, true)['EN'] }}</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}">
                         {{ json_decode($category->name, true)['EN'] }}
+                    </option>
+                @endforeach
+                @if ($errors->has('cate_id'))
+                    <span class="help-block">
+                                        <strong>{{ $errors->first('cate_id') }}</strong>
+                                    </span>
+                @endif
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <select name="desc_id" class="form-control" style="height:36px">
+                <option value="{{ $items->cate_id }}">{{ json_decode( $desc_name, true)['EN'] }}</option>
+                @foreach($descriptions as $description)
+                    <option value="{{ $description->id }}">
+                        {{ json_decode($description->name, true)['EN'] }}
                     </option>
                 @endforeach
                 @if ($errors->has('cate_id'))
